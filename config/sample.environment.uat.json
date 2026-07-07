@@ -1,0 +1,14 @@
+{
+  "environmentName": "uat",
+  "api": {
+    "baseUrl": "http://uat.example.invalid",
+    "timeoutSeconds": 60
+  },
+  "logging": {
+    "level": "WARN"
+  },
+  "features": {
+    "enableCallbacks": true,
+    "enableBetaScreens": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "package": "sample-release",
+  "version": "1.0.0",
+  "createdUtc": "2026-07-08T10:00:00Z",
+  "artifacts": [
+    "application-objects.zip",
+    "db-migrations/"
+  ]
+}

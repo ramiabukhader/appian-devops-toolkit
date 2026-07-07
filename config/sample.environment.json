@@ -1,0 +1,13 @@
+{
+  "environmentName": "development",
+  "api": {
+    "baseUrl": "http://localhost:5080",
+    "timeoutSeconds": 30
+  },
+  "logging": {
+    "level": "INFO"
+  },
+  "features": {
+    "enableCallbacks": true
+  }
+}
