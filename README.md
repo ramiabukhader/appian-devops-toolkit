@@ -50,6 +50,78 @@ Requires **PowerShell 5.1+** (Windows PowerShell) or **PowerShell 7+** (cross-pl
     -DifferencePath ./config/sample.environment.uat.json
 ```
 
+## Copy-paste recipes
+
+Run these from the repository root. Every example uses the fictional files
+included in the repository and can be adapted by replacing the paths.
+
+### Validate an environment configuration
+
+Fail when a required value is missing or still contains a placeholder:
+
+```powershell
+./scripts/Test-EnvironmentConfig.ps1 `
+    -ConfigPath ./config/sample.environment.json `
+    -RequiredKeys 'environmentName','api.baseUrl','api.timeoutSeconds','logging.level' `
+    -Strict
+```
+
+Use the same command as a pipeline gate; the script returns exit code `1` when
+validation fails.
+
+### Check a release package before promotion
+
+Require the manifest and release notes while rejecting common secret and
+backup file patterns:
+
+```powershell
+./scripts/Test-ReleasePackage.ps1 `
+    -PackagePath ./samples/release-package `
+    -RequiredFiles 'manifest.json','README.md' `
+    -ForbiddenPatterns '*.bak','*.tmp','*.pfx','*.env','*secret*'
+```
+
+This also returns exit code `1` when the package is unsafe or incomplete.
+
+### Investigate recent errors and warnings
+
+Filter the sample log to authentication-related warnings and errors, then
+format the returned objects as a table:
+
+```powershell
+./scripts/Select-LogEntries.ps1 `
+    -Path ./samples/logs/app.log `
+    -Level ERROR,WARN `
+    -Since '2026-07-08T10:15:00Z' `
+    -Pattern 'auth|timeout' |
+    Format-Table Timestamp,Level,Message,Source -AutoSize
+```
+
+Export the same structured results for incident analysis:
+
+```powershell
+./scripts/Select-LogEntries.ps1 `
+    -Path ./samples/logs/app.log `
+    -Level ERROR,WARN |
+    Export-Csv ./filtered-log.csv -NoTypeInformation
+```
+
+### Review configuration drift
+
+Compare DEV with UAT and keep the differences as normal PowerShell objects for
+filtering or export:
+
+```powershell
+$drift = @(
+    ./scripts/Compare-Configuration.ps1 `
+        -ReferencePath ./config/sample.environment.json `
+        -DifferencePath ./config/sample.environment.uat.json
+)
+
+$drift | Sort-Object Change,Key | Format-Table -AutoSize
+$drift | Where-Object Change -eq 'Changed' | Export-Csv ./changed-values.csv -NoTypeInformation
+```
+
 ## Script reference
 
 ### `Test-EnvironmentConfig.ps1`
